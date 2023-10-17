@@ -1,0 +1,281 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Rezultati</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        th, td {
+            border: 1px solid #ccc;
+            padding: 8px;
+            text-align: center;
+        }
+        th {
+            background-color: #f2f2f2;
+        }
+        tr:nth-child(even) {
+            background-color: #f2f2f2;
+        }
+    </style>
+</head>
+<body>
+    <h1 style="margin: 20px;">Rezultati</h1>
+    <button onclick="obrisiSveUcenike()">Obriši sve učenike</button>
+    <table>
+        <tr>
+            <th>R.br</th>
+            <th>Ime Učenika</th>
+            <th>Prezime Učenika</th>
+            <th>Ocena</th>
+            <th>Postotci (%)</th>
+            <th>Predmet</th>
+            <th>Profesor</th>
+        </tr>
+    </table>
+    
+    <div id="gradeOptions" style="display: none; position: absolute; background-color: #fff; border: 1px solid #ccc;">
+        <button onclick="setGrade('5+')">5+</button>
+        <button onclick="setGrade('5')">5</button>
+        <button onclick="setGrade('4')">4</button>
+        <button onclick="setGrade('3')">3</button>
+        <button onclick="setGrade('2')">2</button>
+        <button onclick="setGrade('1+')">1+</button>
+        <button onclick="setGrade('1')">1</button>
+    </div>
+    
+    <div id="presenceOptions" style="display: none; position: absolute; background-color: #fff; border: 1px solid #ccc;">
+        <input type="text" id="postotakUnos" placeholder="Unesite postotak" onblur="setPresence(this.value)">
+        <span>%</span>
+    </div>
+
+    <h2>Dodaj novog učenika:</h2>
+    <form id="studentForm" onsubmit="addStudent(); return false;">
+        <label for="ime">Ime:</label>
+        <input type="text" id="ime" name="ime" required>
+        <label for="prezime">Prezime:</label> <!-- Dodata = -->
+        <input type="text" id="prezime" name="prezime" required>
+        <label for="predmet">Predmet:</label>
+        <select id="predmet" name="predmet">
+            <option value="- izaberi predmet -">- izaberi predmet -</option>
+            <option value="Srpski jezik">Srpski jezik</option>
+            <option value="Hrvatski jezik">Hrvatski jezik</option>
+            <option value="Engleski jezik I">Engleski jezik I</option>
+            <option value="Fizički">Fizički</option>
+            <option value="Matematika">Matematika</option>
+            <option value="Fizika">Fizika</option>
+            <option value="Etika">Etika</option>
+            <option value="Dizajn baze podataka">Dizajn baze podataka</option>
+            <option value="Građa računala">Građa računara</option>
+            <option value="Mikroupravljači">Mikroupravljači</option>
+            <option value="Operacijski sustavi">Operacijski sustavi</option>
+            <option value="Primenjena matematika">Primenjena matematika</option>
+            <option value="Računalne mreže">Računalne mreže</option>
+            <option value="Napredno i objektno programiranje">Napredno i objektno programiranje</option>
+            <option value="Programiranje mobilnog uređaja">Programiranje mobilnog uređaja</option>
+            <option value="Skriptni jezici i web programiranje">Skriptni jezici i web programiranje</option>
+            <!-- Dodajte ostale opcije za predmete -->
+        </select>
+        <button type="submit">Dodaj</button>
+    </form>
+    
+    <div id="prosek">
+        Prosek ocjena: <span id="prosekVrednost">N/A</span>
+    </div>
+    
+    <script>
+    let redniBroj = 1;
+    let ukupneOcjene = 0;
+    let brojUcenika = 0;
+    let selectedCell = null;
+
+    const profesori = {
+            "Srpski jezik": "Verica Lazić",
+            "Hrvatski jezik": "Tihana Manojlović",
+            "Engleski jezik I": "Maja Savić",
+            "Fizički": "Siniša Sušić",
+            "Matematika": "Predrag Novaković",
+            "Fizika": "Srđan Danilović",
+            "Etika": "Jasmina Šahović Žabka",
+            "Dizajn baze podataka": "Nikola Stanojević",
+            "Građa računala": "Miroslav Karan",
+            "Mikroupravljači": "Nikola Stanojević",
+            "Operacijski sustavi": "Robert Todorović",
+            "Primenjena matematika": "Predrag Novaković",
+            "Računalne mreže": "Nikola Stanojević",
+            "Napredno i objektno programiranje": "Miroslav Karan",
+            "Programiranje mobilnog uređaja": "Saša Ostojić",
+            "Skriptni jezici i web programiranje": "Sanja Rašić"
+        };
+
+    function showGradeOptions(cell) {
+        selectedCell = cell;
+        const optionsDiv = document.getElementById('gradeOptions');
+        optionsDiv.style.display = 'block';
+        optionsDiv.style.left = cell.getBoundingClientRect().left + 'px';
+        optionsDiv.style.top = cell.getBoundingClientRect().bottom + 'px';
+    }
+
+    function bojiRedakPremaOceni(ocena, red) {
+    switch (ocena) {
+        case '1':
+            red.style.backgroundColor = 'red';
+            break;
+        case '1+':
+            red.style.backgroundColor = 'lightcoral';
+            break;
+        case '2':
+            red.style.backgroundColor = 'brown';
+            break;
+        case '3':
+            red.style.backgroundColor = 'yellow';
+            break;
+        case '5':
+            red.style.backgroundColor = 'green';
+            break;
+        case '5+':
+            red.style.backgroundColor = 'violet';
+            break;
+        default:
+            red.style.backgroundColor = ''; // Ako ocena nije prepoznata, uklonite boju.
+            break;
+    }
+}
+
+function setGrade(grade) {
+    selectedCell.innerText = grade;
+    const optionsDiv = document.getElementById('gradeOptions');
+    optionsDiv.style.display = 'none';
+
+    // Dodajte ovaj deo koda za bojanje reda prema oceni
+    const ocena = grade.trim(); // Uklonite razmake oko ocene.
+    const red = selectedCell.parentElement;
+    bojiRedakPremaOceni(ocena, red);
+
+    izracunajProsek();
+}
+
+
+    function showPresenceOptions(cell) {
+        selectedCell = cell;
+        const optionsDiv = document.getElementById('presenceOptions');
+        optionsDiv.style.display = 'block';
+        optionsDiv.style.left = cell.getBoundingClientRect().left + 'px';
+        optionsDiv.style.top = cell.getBoundingClientRect().bottom + 'px';
+    }
+
+    function setPresence(presence) {
+        selectedCell.innerText = presence;
+        const optionsDiv = document.getElementById('presenceOptions');
+        optionsDiv.style.display = 'none';
+
+        izracunajProsek();
+    }
+
+    function addStudent() {
+        const ime = document.getElementById('ime').value;
+        const prezime = document.getElementById('prezime').value;
+        const predmet = document.getElementById('predmet').value;
+
+        if (ime.trim() === "" || prezime.trim() === "" || predmet === "- izaberi predmet -") {
+            alert("Molimo vas da unesete sve potrebne podatke.");
+            return;
+        }
+
+        const table = document.querySelector('table');
+        const row = table.insertRow(table.rows.length);
+        const cell0 = row.insertCell(0);
+        cell0.innerText = redniBroj;
+        const cell1 = row.insertCell(1);
+        cell1.innerText = ime;
+        const cell2 = row.insertCell(2);
+        cell2.innerText = prezime;
+        const cell3 = row.insertCell(3);
+        cell3.onclick = function () {
+            showGradeOptions(cell3);
+        };
+        const cell4 = row.insertCell(4);
+        cell4.onclick = function () {
+            showPresenceOptions(cell4);
+        };
+        const cell5 = row.insertCell(5);
+        cell5.innerText = predmet;
+        const cell6 = row.insertCell(6);
+        cell6.innerText = profesori[predmet];
+
+        redniBroj++;
+
+        document.getElementById('ime').value = '';
+        document.getElementById('prezime').value = '';
+
+        // Sada ćemo sačuvati podatke o učeniku u localStorage
+        const studentData = {
+        ime: ime,
+        prezime: prezime,
+        ocena: "",  // Dodajte ocenu prema potrebi
+        postotak: "",  // Dodajte postotak prema potrebi
+        predmet: predmet
+        };
+
+    // Konvertujte podatke u JSON format i sačuvajte ih u localStorage
+    localStorage.setItem(`ucenik_${redniBroj - 1}`, JSON.stringify(studentData));
+        izracunajProsek();
+    }
+    function ucitajPodatkeIzLocalStorage() {
+    for (let i = 1; i < redniBroj; i++) {
+        const studentData = localStorage.getItem(`ucenik_${i - 1}`);
+        if (studentData) {
+            const parsedData = JSON.parse(studentData);
+            // Dodajte kod za popunjavanje tabele sačuvanim podacima (ime, prezime, ocena, postotak, predmet).
+        }
+    }
+}
+
+// Pozovite funkciju za učitavanje podataka kada se stranica učita.
+window.addEventListener('load', ucitajPodatkeIzLocalStorage);
+
+
+    function izracunajProsek() {
+        ukupneOcjene = 0; // Resetirajte ukupne ocjene
+        brojUcenika = 0;
+
+        const table = document.querySelector('table');
+        const rows = table.rows;
+        for (let i = 1; i < rows.length; i++) {
+            const ocjenaCell = rows[i].cells[3];
+            const ocjena = parseInt(ocjenaCell.innerText);
+            if (!isNaN(ocjena)) {
+                ukupneOcjene += ocjena;
+                brojUcenika++;
+            }
+        }
+
+        if (brojUcenika > 0) {
+            const prosjek = ukupneOcjene / brojUcenika;
+            document.getElementById('prosekVrednost').textContent = prosjek.toFixed(2);
+        } else {
+            document.getElementById('prosekVrednost').textContent = "N/A";
+        }
+    }
+    function obrisiSveUcenike() {
+    const table = document.querySelector('table');
+    // Brisanje svih redova iz tabele osim prvog reda sa zaglavljem.
+    while (table.rows.length > 1) {
+        table.deleteRow(1);
+    }
+    
+    // Resetiranje brojača i prosjeka.
+    redniBroj = 1;
+    ukupneOcjene = 0;
+    brojUcenika = 0;
+    document.getElementById('prosekVrednost').textContent = 'N/A';
+}
+</script>
+<p style="margin-top: 50px;text-align: left;"><img src="C:/Users/serge_x8ctj2k/OneDrive/Radna površina/Srednja škola/Moja škola/HTML/time1.png" alt="Opis slike";><img src="C:/Users/serge_x8ctj2k/OneDrive/Radna površina/Srednja škola/Moja škola/HTML/time2.png" alt="Opis slike"></p>
+</body>
+</html>
