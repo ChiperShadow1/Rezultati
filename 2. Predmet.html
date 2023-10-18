@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Test</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        th, td {
+            border: 1px solid #ccc;
+            padding: 8px;
+            text-align: center;
+        }
+        th {
+            background-color: #f2f2f2;
+        }
+        th:first-child {
+            text-align: left; /* Postavi "PREDMET" skroz lijevo */
+        }
+        th:nth-child(2) {
+            text-align: center; /* Postavi "Ocjene po mjesecima:" u sredinu */
+        }
+        tr:nth-child(even) {
+            background-color: #f2f2f2;
+        }
+    </style>
+</head>
+<body>
+    <h1 style="margin: 20px auto; text-align: center;">Predmet</h1>
+    <form id="predmetForm">
+        <label for="predmetSelect">Izaberite predmet:</label>
+        <select id="predmetSelect" onchange="updatePredmet()">
+            <option value="- izaberi predmet -">- izaberi predmet -</option>
+            <option value="Srpski jezik">Srpski jezik</option>
+            <option value="Hrvatski jezik">Hrvatski jezik</option>
+            <option value="Engleski jezik I">Engleski jezik I</option>
+            <option value="Fizički">Fizički</option>
+            <option value="Matematika">Matematika</option>
+            <option value="Fizika">Fizika</option>
+            <option value="Etika (izborni)">Etika (izborni)</option>
+            <option value="Dizajn baze podataka">Dizajn baze podataka</option>
+            <option value="Građa računala">Građa računara</option>
+            <option value="Mikroupravljači">Mikroupravljači</option>
+            <option value="Operacijski sustavi">Operacijski sustavi</option>
+            <option value="Primenjena matematika">Primenjena matematika</option>
+            <option value="Računalne mreže">Računalne mreže</option>
+            <option value="Napredno i objektno programiranje">Napredno i objektno programiranje</option>
+            <option value="Programiranje mobilnog uređaja">Programiranje mobilnog uređaja</option>
+            <option value="Skriptni jezici i web programiranje">Skriptni jezici i web programiranje</option>
+            <!-- Ovdje dodajte ostale predmete -->
+        </select>
+    </form>
+    <table>
+        <tr>
+            <th id="predmetHeader">PREDMET</th>
+        </tr>
+    </table>
+    <table>
+        <tr>
+            <th>Ocjene proizlaze iz:</th>
+            <th>Ocjene po mjesecima:</th>
+        </tr>
+    </table>
+    <table>
+        <tr>
+            <th>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</th>
+            <th>IX</th>
+            <th>X</th>
+            <th>XI</th>
+            <th>XII</th>
+            <th>I</th>
+            <th>II</th>
+            <th>III</th>
+            <th>IV</th>
+            <th>V</th>
+            <th>VI</th>
+            <th>VII</th>
+        </tr>
+    </table>
+    <table>
+        <tr>
+            <th></th>
+        </tr>
+    </table>
+
+    <h1 style="margin: 20px auto; text-align: center;">RADNJA U TIJEKU!!!</h1>
+    <p style="text-align: center;">
+        <a href="file:///C:/Users/serge_x8ctj2k/OneDrive/Radna%20povr%C5%A1ina/Srednja%20%C5%A1kola/Moja%20%C5%A1kola/HTML/Github/1.Učenici.html">
+            <-Idite u prethodni direktorij
+        </a>
+    </p>
+
+    <script>
+        function updatePredmet() {
+            const predmetSelect = document.getElementById("predmetSelect");
+            const predmetHeader = document.getElementById("predmetHeader");
+            const predmetForm = document.getElementById("predmetForm");
+            const selectedPredmet = predmetSelect.value;
+
+            if (selectedPredmet === "Srpski jezik") {
+                predmetHeader.textContent = "Srpski jezik";
+                predmetForm.style.display = "none"; // Sakrij formu nakon izbora
+            } else {
+                predmetHeader.textContent = selectedPredmet;
+                predmetSelect.disabled = true; // Onemogući izbor nakon izbora
+            }
+        }
+    </script>
+</body>
+</html>
